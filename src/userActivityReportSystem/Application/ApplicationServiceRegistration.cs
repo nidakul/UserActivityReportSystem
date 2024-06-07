@@ -40,7 +40,7 @@ public static class ApplicationServiceRegistration
             configuration.AddOpenBehavior(typeof(AuthorizationBehavior<,>));
             configuration.AddOpenBehavior(typeof(CachingBehavior<,>));
             configuration.AddOpenBehavior(typeof(CacheRemovingBehavior<,>));
-            configuration.AddOpenBehavior(typeof(LoggingBehavior<,>));
+            configuration.AddOpenBehavior(typeof(LoggingBehavior<,>)); 
             configuration.AddOpenBehavior(typeof(RequestValidationBehavior<,>));
             configuration.AddOpenBehavior(typeof(TransactionScopeBehavior<,>));
         });
