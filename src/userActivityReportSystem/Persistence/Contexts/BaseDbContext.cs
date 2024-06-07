@@ -16,14 +16,23 @@ public class BaseDbContext : DbContext
     public DbSet<UserOperationClaim> UserOperationClaims { get; set; }
     public DbSet<Activity> Activities { get; set; }
 
+    public BaseDbContext()
+    {
+
+    }
+
     public BaseDbContext(DbContextOptions dbContextOptions, IConfiguration configuration)
         : base(dbContextOptions)
     {
         Configuration = configuration;
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    //protected override void OnModelCreating(ModelBuilder modelBuilder)
+    //{
+    //    modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+    //}
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        optionsBuilder.UseSqlServer("Server = localhost; Database = UserActivityReportSystem; User Id = SA; Password = rentacardb; TrustServerCertificate=true");
     }
 }

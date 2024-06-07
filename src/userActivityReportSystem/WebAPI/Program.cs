@@ -1,4 +1,5 @@
 using Application;
+using Core.CrossCuttingConcerns.Logging.SeriLog.ConfigurationModels;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -22,6 +23,12 @@ builder.Services.AddControllers();
 builder.Services.AddApplicationServices(
     mailSettings: builder.Configuration.GetSection("MailSettings").Get<MailSettings>()
         ?? throw new InvalidOperationException("MailSettings section cannot found in configuration."),
+
+    msSqlConfiguration: builder
+        .Configuration.GetSection("SeriLogConfigurations:MsSqlConfiguration")
+        .Get<MsSqlConfiguration>()
+        ?? throw new InvalidOperationException("MsSqlConfiguration section cannot found in configuration."),
+
     fileLogConfiguration: builder
         .Configuration.GetSection("SeriLogConfigurations:FileLogConfiguration")
         .Get<FileLogConfiguration>()

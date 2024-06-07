@@ -21,6 +21,8 @@ using NArchitecture.Core.Mailing.MailKit;
 using NArchitecture.Core.Security.DependencyInjection;
 using NArchitecture.Core.Security.JWT;
 using Application.Services.Activities;
+using Core.CrossCuttingConcerns.Logging.SeriLog.ConfigurationModels;
+using Core.CrossCuttingConcerns.Logging.SeriLog.Logger;
 
 namespace Application;
 
@@ -30,6 +32,7 @@ public static class ApplicationServiceRegistration
         this IServiceCollection services,
         MailSettings mailSettings,
         FileLogConfiguration fileLogConfiguration,
+        MsSqlConfiguration msSqlConfiguration,
         ElasticSearchConfig elasticSearchConfig,
         TokenOptions tokenOptions
     )
@@ -41,7 +44,7 @@ public static class ApplicationServiceRegistration
             configuration.AddOpenBehavior(typeof(AuthorizationBehavior<,>));
             configuration.AddOpenBehavior(typeof(CachingBehavior<,>));
             configuration.AddOpenBehavior(typeof(CacheRemovingBehavior<,>));
-            configuration.AddOpenBehavior(typeof(LoggingBehavior<,>)); 
+            configuration.AddOpenBehavior(typeof(LoggingBehavior<,>));
             configuration.AddOpenBehavior(typeof(RequestValidationBehavior<,>));
             configuration.AddOpenBehavior(typeof(TransactionScopeBehavior<,>));
         });
@@ -51,7 +54,8 @@ public static class ApplicationServiceRegistration
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
         services.AddSingleton<IMailService, MailKitMailService>(_ => new MailKitMailService(mailSettings));
-        services.AddSingleton<ILogger, SerilogFileLogger>(_ => new SerilogFileLogger(fileLogConfiguration));
+        //services.AddSingleton<ILogger, SerilogFileLogger>(_ => new SerilogFileLogger(fileLogConfiguration));
+        services.AddSingleton<ILogger, MsSqlLogger>(_ => new MsSqlLogger(msSqlConfiguration));
         services.AddSingleton<IElasticSearch, ElasticSearchManager>(_ => new ElasticSearchManager(elasticSearchConfig));
 
         services.AddScoped<IAuthService, AuthManager>();
