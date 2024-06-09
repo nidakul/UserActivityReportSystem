@@ -20,14 +20,17 @@
 	<PackageReference Include="NArchitecture.Core.Localization.Resource.Yaml.DependencyInjection" Version="1.0.1" />
 	<PackageReference Include="NArchitecture.Core.ElasticSearch" Version="1.0.0" />
 	<PackageReference Include="NArchitecture.Core.Security.DependencyInjection" Version="1.2.0" />
+	<PackageReference Include="CsvHelper" Version="32.0.3" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Services\" />
     <Folder Include="Services\Repositories" />
     <Folder Include="Features\Users\Queries\GetActivityByUserId\" />
+    <Folder Include="Features\Activities\Queries\GetActivitiesReport\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Features\Users\Queries\GetActivityByUserId\" />
+    <None Remove="Features\Activities\Queries\GetActivitiesReport\" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Features\**\Resources\Locales\*.*.yaml">

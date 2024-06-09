@@ -88,7 +88,7 @@ public class LoginCommand : IRequest<LoggedResponse>, ILoggableRequest
             var activity = new Activity
             {
                 UserId = user.Id,
-                ActivityType = "Login",
+                ActivityType = "Giriş",
                 Description = SerilogMessages.LoginMessage,
             };
 

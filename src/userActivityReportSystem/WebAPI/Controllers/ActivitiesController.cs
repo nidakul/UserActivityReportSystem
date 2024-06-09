@@ -6,6 +6,7 @@ using Application.Features.Activities.Queries.GetList;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
 using Microsoft.AspNetCore.Mvc;
+using Application.Features.Activities.Queries.GetActivitiesReport;
 
 namespace WebAPI.Controllers;
 
@@ -26,7 +27,7 @@ public class ActivitiesController : BaseController
     {
         UpdatedActivityResponse response = await Mediator.Send(command);
 
-        return Ok(response);
+        return Ok(response); 
     }
 
     [HttpDelete("{id}")]
@@ -57,6 +58,13 @@ public class ActivitiesController : BaseController
         GetListResponse<GetListActivityListItemDto> response = await Mediator.Send(query);
 
         return Ok(response);
+    }
+
+    [HttpGet("getActivitiesReport")]
+    public async Task<IActionResult> GetActivitiesReport([FromQuery] GetActivitiesReportQuery query)
+    {
+        var reportData = await Mediator.Send(query);
+        return File(reportData, "text/csv", "activity_report.csv");
     }
 
 }

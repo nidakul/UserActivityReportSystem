@@ -5,6 +5,7 @@ using Application.Features.Users.Commands.UpdateFromAuth;
 using Application.Features.Users.Queries.GetActivityByUserId;
 using Application.Features.Users.Queries.GetById;
 using Application.Features.Users.Queries.GetList;
+using Application.Services.Activities;
 using Microsoft.AspNetCore.Mvc;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
@@ -28,7 +29,7 @@ public class UsersController : BaseController
         GetByIdUserQuery getByIdUserQuery = new() { Id = getUserIdFromRequest() };
         GetByIdUserResponse result = await Mediator.Send(getByIdUserQuery);
         return Ok(result);
-    }
+    } 
 
     [HttpGet]
     public async Task<IActionResult> GetList([FromQuery] PageRequest pageRequest)
@@ -73,4 +74,6 @@ public class UsersController : BaseController
         GetActivityByUserIdResponse response = await Mediator.Send(new GetActivityByUserIdQuery { UserId = id });
         return Ok(response);
     }
+
+    
 }
