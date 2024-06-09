@@ -5,6 +5,7 @@ namespace Application.Features.Users.Queries.GetActivityByUserId
     public class GetActivityByUserIdResponse : IResponse
     {
         public Guid Id { get; set; }
+        //public Guid UserId { get; set; }
         public List<GetActivityByUserId> UserActivities { get; set; }
 
 
