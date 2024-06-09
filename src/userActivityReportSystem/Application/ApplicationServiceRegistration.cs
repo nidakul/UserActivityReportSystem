@@ -67,8 +67,6 @@ public static class ApplicationServiceRegistration
         services.AddSecurityServices<Guid, int, Guid>(tokenOptions);
 
         services.AddScoped<IActivityService, ActivityManager>();
-        services.AddScoped<IActivityService, ActivityManager>();
-        services.AddScoped<IActivityService, ActivityManager>();
         return services;
     }
 

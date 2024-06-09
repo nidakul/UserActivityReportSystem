@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NArchitecture.Core.Persistence.DependencyInjection;
 using Persistence.Contexts;
-using Persistence.Repositories;
+using Persistence.Repositories; 
 
 namespace Persistence;
 

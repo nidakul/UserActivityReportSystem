@@ -2,6 +2,7 @@ using Application.Features.Users.Commands.Create;
 using Application.Features.Users.Commands.Delete;
 using Application.Features.Users.Commands.Update;
 using Application.Features.Users.Commands.UpdateFromAuth;
+using Application.Features.Users.Queries.GetActivityByUserId;
 using Application.Features.Users.Queries.GetById;
 using Application.Features.Users.Queries.GetList;
 using AutoMapper;
@@ -25,6 +26,16 @@ public class MappingProfiles : Profile
         CreateMap<User, DeletedUserResponse>().ReverseMap();
         CreateMap<User, GetByIdUserResponse>().ReverseMap();
         CreateMap<User, GetListUserListItemDto>().ReverseMap();
+        CreateMap<User, GetActivityByUserIdResponse>()
+       .ForMember(u => u.Id, opt => opt.MapFrom(u => u.Id))
+             .ForMember(dest => dest.UserActivities, opt => opt.MapFrom(src => src.Activities.Select(u => new GetActivityByUserId
+             {
+                 ActivityType = u.ActivityType,
+                 Description = u.Description,
+                 CreatedDate = u.CreatedDate
+             }).ToList())).ReverseMap();
         CreateMap<IPaginate<User>, GetListResponse<GetListUserListItemDto>>().ReverseMap();
     }
 }
+
+

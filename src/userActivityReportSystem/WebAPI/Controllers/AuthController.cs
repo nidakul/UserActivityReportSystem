@@ -18,7 +18,7 @@ namespace WebAPI.Controllers;
 public class AuthController : BaseController
 {
     private readonly WebApiConfiguration _configuration;
-
+    
     public AuthController(IConfiguration configuration)
     {
         const string configurationSection = "WebAPIConfiguration";

@@ -6,14 +6,14 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NArchitecture.Core.CrossCuttingConcerns.Exception.WebApi.Extensions;
 using NArchitecture.Core.CrossCuttingConcerns.Logging.Configurations;
-using NArchitecture.Core.ElasticSearch.Models;
+using NArchitecture.Core.ElasticSearch.Models; 
 using NArchitecture.Core.Localization.WebApi;
 using NArchitecture.Core.Mailing;
 using NArchitecture.Core.Persistence.WebApi;
 using NArchitecture.Core.Security.Encryption;
 using NArchitecture.Core.Security.JWT;
 using NArchitecture.Core.Security.WebApi.Swagger.Extensions;
-using Persistence;
+using Persistence; 
 using Swashbuckle.AspNetCore.SwaggerUI;
 using WebAPI;
 
@@ -29,7 +29,7 @@ builder.Services.AddApplicationServices(
         .Get<MsSqlConfiguration>()
         ?? throw new InvalidOperationException("MsSqlConfiguration section cannot found in configuration."),
 
-    fileLogConfiguration: builder
+    fileLogConfiguration: builder 
         .Configuration.GetSection("SeriLogConfigurations:FileLogConfiguration")
         .Get<FileLogConfiguration>()
         ?? throw new InvalidOperationException("FileLogConfiguration section cannot found in configuration."),
@@ -90,6 +90,15 @@ builder.Services.AddSwaggerGen(opt =>
     opt.OperationFilter<BearerSecurityRequirementOperationFilter>();
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy",
+        builder => builder
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -106,6 +115,7 @@ if (app.Environment.IsProduction())
     app.ConfigureCustomExceptionMiddleware();
 
 app.UseDbMigrationApplier();
+app.UseCors("CorsPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();

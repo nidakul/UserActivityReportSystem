@@ -35,4 +35,7 @@
     <Folder Include="Controllers\Dtos" />
     <Folder Include="logs\" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" />
+  </ItemGroup>
 </Project>

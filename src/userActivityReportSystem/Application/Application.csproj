@@ -24,6 +24,10 @@
   <ItemGroup>
     <Folder Include="Services\" />
     <Folder Include="Services\Repositories" />
+    <Folder Include="Features\Users\Queries\GetActivityByUserId\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Features\Users\Queries\GetActivityByUserId\" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Features\**\Resources\Locales\*.*.yaml">

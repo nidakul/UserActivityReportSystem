@@ -58,4 +58,6 @@ public class ActivitiesController : BaseController
 
         return Ok(response);
     }
+
 }
+

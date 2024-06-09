@@ -8,4 +8,6 @@ public class GetListActivityListItemDto : IDto
     public Guid UserId { get; set; }
     public string ActivityType { get; set; }
     public string Description { get; set; }
-}
+    public string CreatedDate { get; set; }
+
+} 

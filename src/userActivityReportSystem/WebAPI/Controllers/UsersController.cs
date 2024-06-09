@@ -2,6 +2,7 @@
 using Application.Features.Users.Commands.Delete;
 using Application.Features.Users.Commands.Update;
 using Application.Features.Users.Commands.UpdateFromAuth;
+using Application.Features.Users.Queries.GetActivityByUserId;
 using Application.Features.Users.Queries.GetById;
 using Application.Features.Users.Queries.GetList;
 using Microsoft.AspNetCore.Mvc;
@@ -64,5 +65,12 @@ public class UsersController : BaseController
     {
         DeletedUserResponse result = await Mediator.Send(deleteUserCommand);
         return Ok(result);
+    }
+
+    [HttpGet("getActivities/{id}")]
+    public async Task<IActionResult> GetActivityByUserId([FromRoute] Guid id)
+    {
+        GetActivityByUserIdResponse response = await Mediator.Send(new GetActivityByUserIdQuery { UserId = id });
+        return Ok(response);
     }
 }

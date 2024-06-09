@@ -1,18 +1,21 @@
 ﻿using Application.Features.Auth.Rules;
+using Application.Services.Activities;
 using Application.Services.AuthenticatorService;
 using Application.Services.AuthService;
 using Application.Services.UsersService;
+using Core.CrossCuttingConcerns.Logging.SeriLog.Messages;
 using Domain.Entities;
 using MediatR;
 using NArchitecture.Core.Application.Dtos;
+using NArchitecture.Core.Application.Pipelines.Logging;
 using NArchitecture.Core.Security.Enums;
 using NArchitecture.Core.Security.JWT;
 
 namespace Application.Features.Auth.Commands.Login;
 
-public class LoginCommand : IRequest<LoggedResponse>
+public class LoginCommand : IRequest<LoggedResponse>, ILoggableRequest 
 {
-    public UserForLoginDto UserForLoginDto { get; set; }
+    public UserForLoginDto UserForLoginDto { get; set; } 
     public string IpAddress { get; set; }
 
     public LoginCommand()
@@ -33,18 +36,21 @@ public class LoginCommand : IRequest<LoggedResponse>
         private readonly IAuthenticatorService _authenticatorService;
         private readonly IAuthService _authService;
         private readonly IUserService _userService;
+        private readonly IActivityService _activityService;
 
         public LoginCommandHandler(
             IUserService userService,
             IAuthService authService,
             AuthBusinessRules authBusinessRules,
-            IAuthenticatorService authenticatorService
+            IAuthenticatorService authenticatorService,
+            IActivityService activityService
         )
         {
             _userService = userService;
             _authService = authService;
             _authBusinessRules = authBusinessRules;
             _authenticatorService = authenticatorService;
+            _activityService = activityService;
         }
 
         public async Task<LoggedResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
@@ -78,6 +84,16 @@ public class LoginCommand : IRequest<LoggedResponse>
 
             loggedResponse.AccessToken = createdAccessToken;
             loggedResponse.RefreshToken = addedRefreshToken;
+
+            var activity = new Activity
+            {
+                UserId = user.Id,
+                ActivityType = "Login",
+                Description = SerilogMessages.LoginMessage,
+            };
+
+            await _activityService.AddAsync(activity);
+
             return loggedResponse;
         }
     }
