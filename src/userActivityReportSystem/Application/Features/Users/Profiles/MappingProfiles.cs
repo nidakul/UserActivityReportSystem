@@ -28,7 +28,9 @@ public class MappingProfiles : Profile
         CreateMap<User, GetListUserListItemDto>().ReverseMap();
         CreateMap<User, GetActivityByUserIdResponse>()
        .ForMember(u => u.Id, opt => opt.MapFrom(u => u.Id))
-             .ForMember(dest => dest.UserActivities, opt => opt.MapFrom(src => src.Activities.Select(u => new GetActivityByUserId
+             .ForMember(dest => dest.UserActivities, opt => opt.MapFrom(src => src.Activities
+             .OrderByDescending(u => u.CreatedDate)
+             .Select(u => new GetActivityByUserId
              {
                  ActivityType = u.ActivityType,
                  Description = u.Description,

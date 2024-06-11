@@ -1,15 +1,19 @@
-﻿using Application.Features.Auth.Rules;
+﻿using Application.Features.Activities.Commands.Create;
+using Application.Features.Auth.Rules;
 using Application.Services.AuthService;
 using Application.Services.Repositories;
+using Core.CrossCuttingConcerns.Logging.SeriLog.Messages;
 using Domain.Entities;
 using MediatR;
 using NArchitecture.Core.Application.Dtos;
+using NArchitecture.Core.Application.Pipelines.Logging;
+using NArchitecture.Core.Security.Entities;
 using NArchitecture.Core.Security.Hashing;
 using NArchitecture.Core.Security.JWT;
 
 namespace Application.Features.Auth.Commands.Register;
 
-public class RegisterCommand : IRequest<RegisteredResponse>
+public class RegisterCommand : IRequest<RegisteredResponse>, ILoggableRequest
 {
     public UserForRegisterDto UserForRegisterDto { get; set; }
     public string IpAddress { get; set; }
@@ -30,17 +34,20 @@ public class RegisterCommand : IRequest<RegisteredResponse>
     {
         private readonly IUserRepository _userRepository;
         private readonly IAuthService _authService;
+        private readonly IActivityRepository _activityRepository;
         private readonly AuthBusinessRules _authBusinessRules;
 
         public RegisterCommandHandler(
             IUserRepository userRepository,
             IAuthService authService,
-            AuthBusinessRules authBusinessRules
+            AuthBusinessRules authBusinessRules,
+            IActivityRepository activityRepository
         )
         {
             _userRepository = userRepository;
             _authService = authService;
             _authBusinessRules = authBusinessRules;
+            _activityRepository = activityRepository;
         }
 
         public async Task<RegisteredResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
@@ -70,6 +77,16 @@ public class RegisterCommand : IRequest<RegisteredResponse>
             Domain.Entities.RefreshToken addedRefreshToken = await _authService.AddRefreshToken(createdRefreshToken);
 
             RegisteredResponse registeredResponse = new() { AccessToken = createdAccessToken, RefreshToken = addedRefreshToken };
+
+            CreateActivityForLogResponse createActivityForLogResponse = new CreateActivityForLogResponse
+            {
+                UserId = createdUser.Id,
+                ActivityType = "Kayıt",
+                Description = SerilogMessages.RegisterMessage,
+            };
+
+            await _activityRepository.CreateActivityAsync(createActivityForLogResponse);
+
             return registeredResponse;
         }
     }

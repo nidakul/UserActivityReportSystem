@@ -1,7 +1,10 @@
-﻿using Application.Features.Auth.Rules;
+﻿using Application.Features.Activities.Commands.Create;
+using Application.Features.Auth.Commands.Register;
+using Application.Features.Auth.Rules;
 using Application.Services.Activities;
 using Application.Services.AuthenticatorService;
 using Application.Services.AuthService;
+using Application.Services.Repositories;
 using Application.Services.UsersService;
 using Core.CrossCuttingConcerns.Logging.SeriLog.Messages;
 using Domain.Entities;
@@ -36,21 +39,21 @@ public class LoginCommand : IRequest<LoggedResponse>, ILoggableRequest
         private readonly IAuthenticatorService _authenticatorService;
         private readonly IAuthService _authService;
         private readonly IUserService _userService;
-        private readonly IActivityService _activityService;
+        private readonly IActivityRepository _activityRepository;
 
         public LoginCommandHandler(
             IUserService userService,
             IAuthService authService,
             AuthBusinessRules authBusinessRules,
             IAuthenticatorService authenticatorService,
-            IActivityService activityService
+            IActivityRepository activityRepository
         )
         {
             _userService = userService;
             _authService = authService;
             _authBusinessRules = authBusinessRules;
             _authenticatorService = authenticatorService;
-            _activityService = activityService;
+            _activityRepository = activityRepository;
         }
 
         public async Task<LoggedResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
@@ -85,14 +88,14 @@ public class LoginCommand : IRequest<LoggedResponse>, ILoggableRequest
             loggedResponse.AccessToken = createdAccessToken;
             loggedResponse.RefreshToken = addedRefreshToken;
 
-            var activity = new Activity
+            CreateActivityForLogResponse createActivityForLogResponse = new CreateActivityForLogResponse
             {
                 UserId = user.Id,
                 ActivityType = "Giriş",
                 Description = SerilogMessages.LoginMessage,
             };
 
-            await _activityService.AddAsync(activity);
+            await _activityRepository.CreateActivityAsync(createActivityForLogResponse);
 
             return loggedResponse;
         }

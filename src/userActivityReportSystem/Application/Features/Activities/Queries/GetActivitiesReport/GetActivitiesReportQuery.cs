@@ -1,6 +1,7 @@
 ﻿using Application.Services.Repositories;
 using CsvHelper;
 using MediatR;
+using NArchitecture.Core.Application.Pipelines.Logging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -9,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace Application.Features.Activities.Queries.GetActivitiesReport
 {
-    public class GetActivitiesReportQuery : IRequest<byte[]>
+    public class GetActivitiesReportQuery : IRequest<byte[]>, ILoggableRequest
     {
         public Guid UserId { get; set; }
         public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime EndDate { get; set; } 
     }
 
     public class GetActivitiesReportQueryHandler : IRequestHandler<GetActivitiesReportQuery, byte[]>
