@@ -87,6 +87,7 @@ public class RegisterCommand : IRequest<RegisteredResponse>, ILoggableRequest
 
             await _activityRepository.CreateActivityAsync(createActivityForLogResponse);
 
+
             return registeredResponse;
         }
     }

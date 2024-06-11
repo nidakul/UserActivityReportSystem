@@ -1,4 +1,6 @@
-﻿using Application.Services.Repositories;
+﻿using Application.Features.Activities.Commands.Create;
+using Application.Services.Repositories;
+using Core.CrossCuttingConcerns.Logging.SeriLog.Messages;
 using CsvHelper;
 using MediatR;
 using NArchitecture.Core.Application.Pipelines.Logging;
@@ -32,14 +34,29 @@ namespace Application.Features.Activities.Queries.GetActivitiesReport
                 predicate: a => a.UserId == request.UserId && a.CreatedDate >= request.StartDate && a.CreatedDate <= request.EndDate,
                 cancellationToken: cancellationToken);
 
+            byte[] reportData;
+
             using (var memoryStream = new MemoryStream())
             using (var writer = new StreamWriter(memoryStream))
             using (var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture))
             {
                 csvWriter.WriteRecords(activities.Items);
                 writer.Flush();
-                return memoryStream.ToArray();
+                reportData = memoryStream.ToArray();
             }
+
+            CreateActivityForLogResponse createActivityForLogResponse = new CreateActivityForLogResponse
+            {
+                UserId = request.UserId,
+                ActivityType = "Dosya İndirme",
+                Description = SerilogMessages.DownloadActivityReportMessage,
+            };
+
+            await _activityRepository.CreateActivityAsync(createActivityForLogResponse);
+
+            return reportData;
+
         }
     }
 }
+
