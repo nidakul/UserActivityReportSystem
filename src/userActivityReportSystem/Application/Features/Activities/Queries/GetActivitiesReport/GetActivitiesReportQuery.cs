@@ -2,6 +2,9 @@
 using Application.Services.Repositories;
 using Core.CrossCuttingConcerns.Logging.SeriLog.Messages;
 using CsvHelper;
+using CsvHelper.Configuration;
+using CsvHelper.Configuration.Attributes;
+using MailKit.Search;
 using MediatR;
 using NArchitecture.Core.Application.Pipelines.Logging;
 using System.Globalization;
@@ -34,23 +37,41 @@ namespace Application.Features.Activities.Queries.GetActivitiesReport
                 predicate: a => a.UserId == request.UserId && a.CreatedDate >= request.StartDate && a.CreatedDate <= request.EndDate,
                 cancellationToken: cancellationToken);
 
+            var sortedActivities = activities.Items.OrderByDescending(a => a.CreatedDate).ToList();
+
             byte[] reportData;
 
             using (var memoryStream = new MemoryStream())
             using (var writer = new StreamWriter(memoryStream))
-            using (var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            using (var csvWriter = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                csvWriter.WriteRecords(activities.Items);
-                writer.Flush();
+                Delimiter = ",",  
+                HasHeaderRecord = true 
+            }))
+            {
+                csvWriter.WriteHeader<GetActivitiesReportResponse>();
+                csvWriter.NextRecord();
+                foreach (var activity in sortedActivities)
+                {
+                    var record = new GetActivitiesReportResponse
+                    {
+                        ActivityType = activity.ActivityType,
+                        Description = activity.Description,
+                        CreatedDate = activity.CreatedDate
+                    };
+                    csvWriter.WriteRecord(record); 
+                    csvWriter.NextRecord(); 
+                }
+                writer.Flush(); 
                 reportData = memoryStream.ToArray();
             }
 
             CreateActivityForLogResponse createActivityForLogResponse = new CreateActivityForLogResponse
-            {
-                UserId = request.UserId,
-                ActivityType = "Dosya İndirme",
-                Description = SerilogMessages.DownloadActivityReportMessage,
-            };
+                { 
+                    UserId = request.UserId,
+                    ActivityType = "Dosya İndirme",
+                    Description = SerilogMessages.DownloadActivityReportMessage,
+                };
 
             await _activityRepository.CreateActivityAsync(createActivityForLogResponse);
 
@@ -60,3 +81,4 @@ namespace Application.Features.Activities.Queries.GetActivitiesReport
     }
 }
 
+ 

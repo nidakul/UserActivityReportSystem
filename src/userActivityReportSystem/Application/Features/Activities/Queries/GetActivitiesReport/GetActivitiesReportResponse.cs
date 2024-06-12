@@ -7,6 +7,7 @@ namespace Application.Features.Activities.Queries.GetActivitiesReport
         public string ActivityType { get; set; }
         public string Description { get; set; }
         public DateTime CreatedDate { get; set; }
+
         public GetActivitiesReportResponse()
         {
         }
